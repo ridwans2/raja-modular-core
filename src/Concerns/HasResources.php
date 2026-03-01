@@ -73,11 +73,11 @@ trait HasResources
         foreach (File::allFiles($policyPath) as $file) {
             $className = $file->getBasename('.php');
             $module = $registry->getModule($moduleName);
-            $policyClass = rtrim($module['namespace'], '\\')."\\Policies\\{$className}";
+            $policyClass = rtrim($module['namespace'], '\\') . "\\Policies\\{$className}";
 
             if (class_exists($policyClass)) {
                 $modelName = str_replace('Policy', '', $className);
-                $modelClass = rtrim($module['namespace'], '\\')."\\Models\\{$modelName}";
+                $modelClass = rtrim($module['namespace'], '\\') . "\\Models\\{$modelName}";
 
                 if (class_exists($modelClass)) {
                     \Illuminate\Support\Facades\Gate::policy($modelClass, $policyClass);
@@ -92,11 +92,30 @@ trait HasResources
      */
     protected function discoverModuleEvents(string $moduleName, ModuleRegistry $registry): void
     {
+        $module = $registry->getModule($moduleName);
+
+        // 1. Explicit event→listener map from module.json "events" key
+        // Format: { "Events\\PostCreated": ["Listeners\\SendEmail", "Listeners\\LogPost"] }
+        $explicitEvents = $module['events'] ?? [];
+
+        if (! empty($explicitEvents)) {
+            foreach ($explicitEvents as $event => $listeners) {
+                foreach ((array) $listeners as $listener) {
+                    if (class_exists($listener)) {
+                        \Illuminate\Support\Facades\Event::listen($event, $listener);
+                        $registry->setDiscoverySource($moduleName, 'events', "{$event}@{$listener}", 'Explicit/module.json');
+                    }
+                }
+            }
+
+            return;
+        }
+
+        // 2. Cached events (subscribers only)
         $cachedEvents = $registry->getDiscoveredEvents($moduleName);
 
         if (! empty($cachedEvents)) {
             foreach ($cachedEvents as $subscriber) {
-                // We currently only support subscribers in deep discovery for simplicity
                 \Illuminate\Support\Facades\Event::subscribe($subscriber);
                 $registry->setDiscoverySource($moduleName, 'events', $subscriber, 'Cached/Explicit');
             }
@@ -104,6 +123,7 @@ trait HasResources
             return;
         }
 
+        // 3. Convention-based: discover subscribers from app/Listeners/
         $eventsPath = $registry->resolvePath($moduleName, 'app/Listeners');
         if (! is_dir($eventsPath)) {
             return;
@@ -111,15 +131,12 @@ trait HasResources
 
         foreach (File::allFiles($eventsPath) as $file) {
             $className = $file->getBasename('.php');
-            $module = $registry->getModule($moduleName);
-            $listenerClass = rtrim($module['namespace'], '\\')."\\Listeners\\{$className}";
+            $listenerClass = rtrim($module['namespace'], '\\') . "\\Listeners\\{$className}";
 
             if (class_exists($listenerClass)) {
                 if (method_exists($listenerClass, 'subscribe')) {
                     \Illuminate\Support\Facades\Event::subscribe($listenerClass);
                     $registry->setDiscoverySource($moduleName, 'events', $listenerClass, 'Convention');
-
-                    continue;
                 }
             }
         }
@@ -160,9 +177,14 @@ trait HasResources
         if (is_dir($viewsPath)) {
             $this->loadViewsFrom($viewsPath, $lowerName);
 
-            $componentPath = $viewsPath.'/components';
+            $componentPath = $viewsPath . '/components';
             if (is_dir($componentPath)) {
                 Blade::anonymousComponentPath($componentPath, $lowerName);
+            }
+
+            $module = $registry->getModule($moduleName);
+            if ($module) {
+                Blade::componentNamespace(rtrim($module['namespace'], '\\') . '\\View\\Components', $lowerName);
             }
         }
     }

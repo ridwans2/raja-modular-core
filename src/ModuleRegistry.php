@@ -27,6 +27,7 @@ final class ModuleRegistry
      *     removable: bool,
      *     disableable: bool,
      *     policies?: array<string, string>,
+     *     route_prefix?: string,
      *     events?: array<string, array<int, string>|string>,
      *     has_views?: bool,
      *     has_translations?: bool,
@@ -84,7 +85,7 @@ final class ModuleRegistry
         $activator = $this->getActivator();
 
         foreach ($directories as $directory) {
-            $moduleJsonPath = $directory.'/module.json';
+            $moduleJsonPath = $directory . '/module.json';
             $dirName = basename($directory);
             $name = $dirName;
             $config = [];
@@ -112,6 +113,7 @@ final class ModuleRegistry
             $authors = (array) ($config['authors'] ?? []);
             $removable = (bool) ($config['removable'] ?? true);
             $disableable = (bool) ($config['disableable'] ?? true);
+            $routePrefix = (string) ($config['route_prefix'] ?? '');
 
             $this->modules[$name] = [
                 'path' => $directory,
@@ -124,6 +126,7 @@ final class ModuleRegistry
                 'authors' => $authors,
                 'removable' => $removable,
                 'disableable' => $disableable,
+                'route_prefix' => $routePrefix,
                 'policies' => $config['policies'] ?? [],
                 'events' => $config['events'] ?? [],
                 'has_views' => false,
@@ -166,7 +169,7 @@ final class ModuleRegistry
             'statuses' => $this->statuses,
         ];
 
-        $content = '<?php return '.var_export($cache, true).';'.PHP_EOL;
+        $content = '<?php return ' . var_export($cache, true) . ';' . PHP_EOL;
 
         File::put($cachePath, $content);
     }
@@ -186,7 +189,7 @@ final class ModuleRegistry
     /**
      * Get the metadata for a specific module.
      *
-     * @return array{path: string, name: string, namespace: string, providers: array<int, string>, middleware: array<int, string>, requires: array<int, string>, version: string, authors: array<int, array{name: string, email?: string, role?: string}>, removable: bool, disableable: bool, policies?: array<string, string>, events?: array<string, array<int, string>|string>, has_views?: bool, has_translations?: bool, has_migrations?: bool}|null
+     * @return array{path: string, name: string, namespace: string, providers: array<int, string>, middleware: array<int, string>, requires: array<int, string>, version: string, authors: array<int, array{name: string, email?: string, role?: string}>, removable: bool, disableable: bool, route_prefix?: string, policies?: array<string, string>, events?: array<string, array<int, string>|string>, has_views?: bool, has_translations?: bool, has_migrations?: bool}|null
      */
     public function getModule(string $name): ?array
     {
@@ -194,13 +197,59 @@ final class ModuleRegistry
     }
 
     /**
-     * Get all registered modules.
+     * Get all registered modules in topological order (dependencies first).
      *
      * @return array<string, array>
      */
     public function getModules(): array
     {
-        return $this->modules;
+        return $this->sortTopologically($this->modules);
+    }
+
+    /**
+     * Sort modules topologically based on their dependencies.
+     *
+     * @param array<string, array> $modules
+     * @return array<string, array>
+     */
+    protected function sortTopologically(array $modules): array
+    {
+        $ordered = [];
+        $visited = [];
+        $visiting = [];
+
+        $visit = function ($name) use (&$visit, &$ordered, &$visited, &$visiting, $modules) {
+            if (isset($visited[$name])) {
+                return;
+            }
+
+            if (isset($visiting[$name])) {
+                throw new \RuntimeException("Circular dependency detected involving module [{$name}]");
+            }
+
+            $visiting[$name] = true;
+
+            // Sort dependencies first
+            if (isset($modules[$name]['requires'])) {
+                foreach ($modules[$name]['requires'] as $dependency) {
+                    if (isset($modules[$dependency])) {
+                        $visit($dependency);
+                    }
+                }
+            }
+
+            unset($visiting[$name]);
+            $visited[$name] = true;
+            $ordered[$name] = $modules[$name];
+        };
+
+        foreach ($modules as $name => $module) {
+            if (! isset($visited[$name])) {
+                $visit($name);
+            }
+        }
+
+        return $ordered;
     }
 
     /**
@@ -222,7 +271,7 @@ final class ModuleRegistry
             return "Modules\\{$module}\\{$class}";
         }
 
-        return rtrim($moduleData['namespace'], '\\').'\\'.trim($class, '\\');
+        return rtrim($moduleData['namespace'], '\\') . '\\' . trim($class, '\\');
     }
 
     /**
@@ -233,10 +282,10 @@ final class ModuleRegistry
         $moduleData = $this->getModule($module);
 
         if (! $moduleData) {
-            return base_path("modules/{$module}/".trim($path, '/'));
+            return base_path("modules/{$module}/" . trim($path, '/'));
         }
 
-        return $moduleData['path'].'/'.trim($path, '/');
+        return $moduleData['path'] . '/' . trim($path, '/');
     }
 
     /**

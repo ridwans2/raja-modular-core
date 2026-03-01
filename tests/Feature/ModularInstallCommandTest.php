@@ -10,6 +10,7 @@ afterEach(function () {
     File::delete(base_path('vite.config.js'));
     File::delete(base_path('composer.json'));
     File::delete(base_path('vite.modular.js'));
+    File::delete(base_path('phpunit.xml'));
 });
 
 it('can install modular and configure vite automatically', function () {
@@ -29,12 +30,16 @@ it('can install modular and configure vite automatically', function () {
         ],
     ], JSON_PRETTY_PRINT));
 
+    $phpunitXml = base_path('phpunit.xml');
+    File::put($phpunitXml, '<?xml version="1.0" encoding="UTF-8"?><phpunit><testsuites><testsuite name="Feature"><directory suffix="Test.php">./tests/Feature</directory></testsuite><testsuite name="Unit"><directory suffix="Test.php">./tests/Unit</directory></testsuite></testsuites></phpunit>');
+
     $this->artisan('modular:install')
         ->expectsConfirmation('Would you like to publish the modular stubs for customization?', 'yes')
         ->expectsConfirmation("Would you like to add optimized PSR-4 autoloading for 'Modules\\' to your composer.json?", 'yes')
         ->expectsConfirmation('Would you like to automatically configure it?', 'yes')
         ->expectsConfirmation('Would you like to automatically configure vite.config.js?', 'yes')
-        ->expectsConfirmation('Would you like to add a "test" script to run both app and module tests?', 'yes')
+        ->expectsConfirmation('Would you like to automatically configure PHPUnit to run module tests natively?', 'yes')
+        ->expectsConfirmation('Would you like to add a "test" script to your composer.json?', 'yes')
         ->expectsConfirmation('Would you like to show some love by starring the repo on GitHub? ⭐', 'no')
         ->assertExitCode(0);
 
@@ -43,6 +48,10 @@ it('can install modular and configure vite automatically', function () {
     $config = File::get($viteConfig);
     expect($config)->toContain("import { modularLoader } from './vite.modular.js'");
     expect($config)->toContain('...modularLoader.inputs()');
+
+    $phpunitContent = File::get($phpunitXml);
+    expect($phpunitContent)->toContain('./modules/*/tests/Feature');
+    expect($phpunitContent)->toContain('./modules/*/tests/Unit');
 });
 
 it('can install modular and show manual configuration if declined', function () {
@@ -62,12 +71,16 @@ it('can install modular and show manual configuration if declined', function () 
         ],
     ], JSON_PRETTY_PRINT));
 
+    $phpunitXml = base_path('phpunit.xml');
+    File::put($phpunitXml, '<?xml version="1.0" encoding="UTF-8"?><phpunit><testsuites><testsuite name="Feature"><directory suffix="Test.php">./tests/Feature</directory></testsuite><testsuite name="Unit"><directory suffix="Test.php">./tests/Unit</directory></testsuite></testsuites></phpunit>');
+
     $this->artisan('modular:install')
         ->expectsConfirmation('Would you like to publish the modular stubs for customization?', 'no')
         ->expectsConfirmation("Would you like to add optimized PSR-4 autoloading for 'Modules\\' to your composer.json?", 'no')
         ->expectsConfirmation('Would you like to automatically configure it?', 'no')
         ->expectsConfirmation('Would you like to automatically configure vite.config.js?', 'no')
-        ->expectsConfirmation('Would you like to add a "test" script to run both app and module tests?', 'no')
+        ->expectsConfirmation('Would you like to automatically configure PHPUnit to run module tests natively?', 'no')
+        ->expectsConfirmation('Would you like to add a "test" script to your composer.json?', 'no')
         ->expectsConfirmation('Would you like to show some love by starring the repo on GitHub? ⭐', 'no')
         ->assertExitCode(0);
 
@@ -75,4 +88,8 @@ it('can install modular and show manual configuration if declined', function () 
 
     $config = File::get($viteConfig);
     expect($config)->not->toContain("import { modularLoader } from './vite.modular.js'");
+
+    $phpunitContent = File::get($phpunitXml);
+    expect($phpunitContent)->not->toContain('./modules/*/tests/Feature');
+    expect($phpunitContent)->not->toContain('./modules/*/tests/Unit');
 });

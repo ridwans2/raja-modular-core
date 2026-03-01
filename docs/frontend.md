@@ -1,6 +1,7 @@
 # Assets & Frontend
 
 This package supports two major workflows for handling frontend assets:
+
 1.  **Vite Integration (HMR)**: Developing locally with Hot Module Replacement.
 2.  **Symlinking**: Linking raw assets to `public/` for simple serving.
 
@@ -11,44 +12,46 @@ This package supports two major workflows for handling frontend assets:
 Laravel Modular is designed to work seamlessly with Vite.
 
 ### Step 1: Root Configuration
+
 To enable Vite to "see" your module assets, you need to tell it where to look.
 
 Create a `vite.modular.js` (or similar) helper to glob your module inputs:
 
 ```javascript
 // vite.modular.js
-import { globSync } from 'glob';
+import { globSync } from "glob";
 
 export const modularLoader = {
     inputs() {
         // Scans all modules for JS/CSS entry points
-        return globSync('modules/*/resources/assets/{css,js,ts}/*.{css,js,ts}');
+        return globSync("modules/*/resources/assets/{css,js,ts}/*.{css,js,ts}");
     },
     refreshPaths() {
         // Tells Vite to reload when you edit a module's blade file
-        return ['modules/*/resources/views/**/*.blade.php'];
-    }
+        return ["modules/*/resources/views/**/*.blade.php"];
+    },
 };
 ```
 
 ### Step 2: Update `vite.config.js`
+
 Import the helper and add it to the Laravel plugin config.
 
 ```javascript
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import { modularLoader } from './vite.modular.js';
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+import { modularLoader } from "./vite.modular.js";
 
 export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/css/app.css',
-                'resources/js/app.js',
-                ...modularLoader.inputs() // <--- Auto-discover module assets
+                "resources/css/app.css",
+                "resources/js/app.js",
+                ...modularLoader.inputs(), // <--- Auto-discover module assets
             ],
             refresh: [
-                ...modularLoader.refreshPaths() // <--- Auto-refresh on changes
+                ...modularLoader.refreshPaths(), // <--- Auto-refresh on changes
             ],
         }),
     ],
@@ -56,6 +59,7 @@ export default defineConfig({
 ```
 
 ### Step 3: Usage in Layouts
+
 Use the global helper `modular_vite()` to inject the script tags. This wrapper automatically points to the correct build directory.
 
 ```blade
@@ -73,11 +77,44 @@ Use the global helper `modular_vite()` to inject the script tags. This wrapper a
 
 ---
 
-## 2. NPM Workspaces (Dependencies)
+## 2. Blade Components (Native & Class-Based)
+
+Laravel Modular dynamically registers Blade Component Namespaces for all of your modules automatically. Whether you are using anonymous blade components or strictly-typed PHP class components, everything resolves perfectly natively!
+
+### Class-Based Components (v1.1.5+)
+
+If you create a component inside `modules/Shop/app/View/Components/Alert.php` and a view in `modules/Shop/resources/views/components/alert.blade.php`:
+
+```php
+// modules/Shop/app/View/Components/Alert.php
+namespace Modules\Shop\View\Components;
+
+use Illuminate\View\Component;
+
+class Alert extends Component
+{
+    public function render() {
+        return view('shop::components.alert');
+    }
+}
+```
+
+You can render it seamlessly anywhere using the standard native Laravel syntax:
+
+```blade
+<x-shop::alert type="success" message="Payment Processed!" />
+```
+
+The underlying architecture flawlessly maps `shop::` straight to the `Modules\Shop\View\Components` namespace!
+
+---
+
+## 3. NPM Workspaces (Dependencies)
 
 Each module is treated as a separate package with its own `package.json`.
 
 ### Installing Dependencies
+
 Do not run `npm install` inside the module directory manually. Instead, use the `modular:npm` command to ensure context is correct (especially if using workspaces).
 
 ```bash
@@ -86,6 +123,7 @@ php artisan modular:npm Dashboard install chart.js
 ```
 
 ### Running Scripts
+
 You can run any script defined in a module's `package.json`.
 
 ```bash
@@ -110,6 +148,7 @@ This creates a symbolic link:
 `public/modules/shop` -> `modules/Shop/resources/assets`
 
 You can then reference them:
+
 ```blade
 <img src="{{ module_asset('Shop', 'images/logo.png') }}" />
 {{-- Resolves to: http://site.test/modules/shop/images/logo.png --}}

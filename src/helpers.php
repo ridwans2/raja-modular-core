@@ -37,13 +37,25 @@ if (! function_exists('module_path')) {
     }
 }
 
+if (! function_exists('modules_path')) {
+    /**
+     * Get the absolute path to the modules directory.
+     */
+    function modules_path(string $path = ''): string
+    {
+        $basePath = (string) config('modular.paths.modules', base_path('modules'));
+
+        return $path ? rtrim($basePath, '/') . '/' . ltrim($path, '/') : rtrim($basePath, '/');
+    }
+}
+
 if (! function_exists('module_config_path')) {
     /**
      * Get the absolute path to a module configuration file.
      */
     function module_config_path(string $module, string $path = ''): string
     {
-        return module_path($module, 'config/'.trim($path, '/'));
+        return module_path($module, 'config/' . trim($path, '/'));
     }
 }
 
@@ -56,7 +68,7 @@ if (! function_exists('module_asset')) {
         $module = strtolower($module);
         $assetPath = config('modular.paths.assets', 'modules');
 
-        return asset("{$assetPath}/{$module}/".ltrim($path, '/'));
+        return asset("{$assetPath}/{$module}/" . ltrim($path, '/'));
     }
 }
 

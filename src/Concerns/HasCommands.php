@@ -37,6 +37,7 @@ trait HasCommands
             Commands\ModularListCommand::class,
             Commands\ModularNpmCommand::class,
             Commands\ModularDoctorCommand::class,
+            Commands\ModularExportCommand::class,
         ]);
 
         if (config('modular.discovery.commands', true)) {
@@ -53,7 +54,7 @@ trait HasCommands
         $modules = $registry->getModules();
 
         foreach ($modules as $moduleName => $module) {
-            $commandPath = $module['path'].'/app/Console/Commands';
+            $commandPath = $module['path'] . '/app/Console/Commands';
 
             if (! is_dir($commandPath)) {
                 continue;
@@ -61,7 +62,7 @@ trait HasCommands
 
             foreach (\Illuminate\Support\Facades\File::allFiles($commandPath) as $file) {
                 $relativePath = str_replace(['/', '.php'], ['\\', ''], $file->getRelativePathname());
-                $class = rtrim($module['namespace'], '\\').'\\Console\\Commands\\'.$relativePath;
+                $class = rtrim($module['namespace'], '\\') . '\\Console\\Commands\\' . $relativePath;
 
                 if (class_exists($class) && ! (new \ReflectionClass($class))->isAbstract()) {
                     $this->commands($class);

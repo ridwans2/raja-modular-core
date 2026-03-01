@@ -4,6 +4,10 @@
 
 These commands create files inside your modules. They support **all** standard Laravel flags (like `-m`, `-c`, `-r`).
 
+> [!TIP]
+> **Custom Per-Module Stubs (v1.1.5+)**
+> The `make:*` commands will automatically scan inside your module for a `stubs/` directory first before falling back to application stubs. This allows you to completely override Laravel's generator scaffolding exclusively for one specific module! (e.g., `modules/Shop/stubs/controller.model.stub`)
+
 ### `make:module`
 
 Creates a brand new module with the full directory structure.
@@ -114,6 +118,9 @@ Displays a table of all modules, their status (Enabled/Disabled), and path.
 
 ```bash
 php artisan modular:list
+
+# Visualize dependencies in an ASCII tree!
+php artisan modular:list --tree
 ```
 
 ---
@@ -129,8 +136,11 @@ php artisan modular:migrate
 # Migrate ONLY the Shop module
 php artisan modular:migrate Shop
 
-# Rollback
-php artisan modular:migrate:rollback Shop
+# Rollback migrations for ONLY the Shop module
+php artisan modular:migrate Shop --rollback
+
+# Rollback exactly 2 steps for the Shop module
+php artisan modular:migrate Shop --rollback --step=2
 ```
 
 ---
@@ -163,7 +173,7 @@ php artisan modular:test --coverage-html=coverage-report
 - `--coverage-clover={path}`: Export Clover XML.
 - `--coverage-html={path}`: Export HTML report.
 
-*Note: Individual module coverage is collected in isolation and merged into a single report.*
+_Note: Individual module coverage is collected in isolation and merged into a single report._
 
 ---
 
@@ -185,7 +195,7 @@ php artisan modular:npm Shop run build
 
 This command is critical for large teams. It scans all `packages/modular/*/composer.json` files and merges their requirements into the root `composer.json` (into a `requires` section managed by the package).
 
-*Note: This usually happens automatically during `make:module`, but run this if you manually edit dependencies.*
+_Note: This usually happens automatically during `make:module`, but run this if you manually edit dependencies._
 
 ```bash
 php artisan modular:sync
@@ -297,7 +307,7 @@ Enable a module instantly.
 php artisan module:enable Shop
 ```
 
-*Note: Enabled modules are verified for dependencies. If a module requires another module that is currently disabled, the command will fail.*
+_Note: Enabled modules are verified for dependencies. If a module requires another module that is currently disabled, the command will fail._
 
 ---
 
@@ -309,7 +319,7 @@ Disable a module instantly.
 php artisan module:disable Shop
 ```
 
-*Disabled modules are not loaded, their routes are 404, and their services are not booted.*
+_Disabled modules are not loaded, their routes are 404, and their services are not booted._
 
 ---
 

@@ -2,6 +2,33 @@
 
 All notable changes to `laravel-modular` will be documented in this file.
 
+## v1.1.5 - 2026-02-28
+
+### Added
+
+- **Class-Based Blade Components**: Properly mapped `Blade::componentNamespace` internally, allowing native `<x-module::component>` usage for PHP class-based components located in `app/View/Components/`.
+- **Custom Eloquent Factory Resolution**: Intercepted Laravel's `Factory::guessFactoryNamesUsing` to successfully map `Modules\Shop\Models\Item` to `Modules\Shop\Database\Factories\ItemFactory` for intuitive testing.
+- **Route Prefixes**: Automatically mounts all modular web/API routes using `route_prefix` defined within `module.json` (defaults to none for backward compatibility).
+- **Topological Boot Sorting**: `ModuleRegistry` now implements Kahn's graph sorting algorithm to guarantee that modules are booted in strict order of their dependencies.
+- **Custom Per-Module Stubs**: `make:*` commands will now dynamically check a module's `stubs/` directory first, allowing you to override scaffolding templates on a per-module basis.
+- **Blade Directives**: Introduced `@moduleEnabled('ModuleName')` and `@moduleDisabled('ModuleName')` directives for clean conditional rendering in views.
+- **Explicit Event Mapping**: Added support for explicit event-to-listener registration defined in `module.json`'s `events` array, operating alongside convention-based subscriber discovery.
+- **Migration Rollbacks**: `modular:migrate` now fully mimics native Laravel by supporting `--rollback` and `--step=N` flags to intelligently revert single-module migrations.
+- **Dependency Tree Visualization**: `modular:list` now accepts a `--tree` flag that prints a visual ASCII tree of module dependencies and their enabled/disabled status.
+- **Module Health Score**: `modular:doctor` now features a comprehensive 100-point Health Score per module, intelligently evaluating criteria like testing coverage, readme presence, dependencies, and valid manifests.
+- **Module Extractor**: Added a powerful new `modular:export {module}` command to detach and export a module to a target directory as a fully-functional, standalone Composer package.
+- **Native Testing Support**: Running `php artisan test` or `./vendor/bin/pest` from the root of a Laravel application natively discovers and runs all tests inside `modules/*/tests/`.
+- **Dynamic PHPUnit Injection**: `modular:install` seamlessly injects the module test paths into the host application's `phpunit.xml` or `phpunit.xml.dist`.
+- **Automatic Test Autoloading**: Newly generated modules via `make:module` now include proper `autoload-dev` mappings for PSR-4 compliance. Legacy modules are automatically patched during `modular:install`.
+- **Laravel 13 Support**: Official compatibility with Laravel 13.
+- **New Helper Method**: Added `modules_path($path = '')` helper to easily retrieve the absolute path to the project's root modules directory.
+
+### Changed
+
+- **Composer Test Script**: `modular:install` optimizes `composer.json`'s test script to prevent duplicated tests.
+
+---
+
 ## v1.1.4 - 2026-02-06
 
 ### Added
@@ -18,7 +45,7 @@ All notable changes to `laravel-modular` will be documented in this file.
 
 - **Standardized Configuration**: enforced consistent `pint.json` and `composer.json` dev-dependencies across the entire ecosystem.
 - **Refactored `HasCommands`**: Simplified internal trait by replacing ~60 lines of imports with clean namespace aliases.
-- **Isolated Testing**: `php artisan modular:test` (without arguments) now sequentially runs tests for *all* modules in their own isolated environments.
+- **Isolated Testing**: `php artisan modular:test` (without arguments) now sequentially runs tests for _all_ modules in their own isolated environments.
 
 ## v1.1.3 - 2026-01-31
 
@@ -26,8 +53,8 @@ All notable changes to `laravel-modular` will be documented in this file.
 
 - **New Command**: Introduced `module:uninstall {module}` command to safely remove modules. This command checks for the `removable` flag and clears the module cache upon completion.
 - **Module Metadata**: Added `removable` and `disableable` fields to `module.json` schema and registry.
-  - `removable`: Controls whether the module can be uninstalled via CLI (default: `true`).
-  - `disableable`: Controls whether the module can be disabled via CLI (default: `true`).
+    - `removable`: Controls whether the module can be uninstalled via CLI (default: `true`).
+    - `disableable`: Controls whether the module can be disabled via CLI (default: `true`).
 - **Documentation**: Enhanced documentation site.
 
 ### Changed
@@ -78,20 +105,20 @@ All notable changes to `laravel-modular` will be documented in this file.
 - **Config Merging**: Automatic merging of module config files into `modules.{module}.{file}`.
 - **Provider Auto-Discovery**: Support for `providers` array in `module.json` for auto-registration.
 - **New Commands**:
-  - `modular:check`: Detect circular dependencies.
-  - `modular:publish`: Publish module assets, views, and config.
-  - `modular:test`: Run tests for specific modules.
-  - `modular:debug`: Visualize module status, providers, paths, and middleware.
-  - `modular:ide-helper`: Generate IDE autocomplete helper for modules.
+    - `modular:check`: Detect circular dependencies.
+    - `modular:publish`: Publish module assets, views, and config.
+    - `modular:test`: Run tests for specific modules.
+    - `modular:debug`: Visualize module status, providers, paths, and middleware.
+    - `modular:ide-helper`: Generate IDE autocomplete helper for modules.
 - **Config Aliasing**: Case-insensitive config access with opt-out support via `modular.config.alias`.
 - **Middleware Registry**: Support for defining middleware aliases and groups in `module.json`.
 - **Performance First**: Built-in discovery caching (`modular:cache` and `modular:clear`) for near-zero overhead in production.
 - **Dynamic Activation**: Enable or disable modules dynamically using the new `FileActivator` system.
 - **Artisan Management**: New commands `module:enable {module}` and `module:disable {module}`.
 - **Auto-Discovery**:
-  - Automatic registration of Artisan commands within `app/Console/Commands`.
-  - Automatic registration of Policies within `app/Policies`.
-  - Support for custom Event Listener discovery logic.
+    - Automatic registration of Artisan commands within `app/Console/Commands`.
+    - Automatic registration of Policies within `app/Policies`.
+    - Support for custom Event Listener discovery logic.
 - **JSON Schema**: Added `module.schema.json` for IDE autocompletion and validation of `module.json`.
 - **Versioning**: Modules now support a `version` field in `module.json`.
 - **Vite Integration**: Added `modular_vite()` helper for effortless asset loading across modules.

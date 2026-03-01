@@ -1,19 +1,21 @@
 # Architecture & Concepts
 
-
-
 ## The Core Philosophy
 
 Laravel Modular is built on **Strict Domain-Driven Design (DDD)** principles, but implemented with the **Laravel conventions** you already know.
 
 ### 1. The "Wall of Separation"
+
 Modules are designed to be isolated.
+
 - **Rule #1:** A module should generally not "know" about other modules.
 - **Rule #2:** If Module A needs Module B, it must be an explicit dependency (defined in `module.json` and `composer.json`).
 - **Rule #3:** Code sharing should happen via **Contracts (Interfaces)** or **Events**, not direct class instantiation.
 
 ### 2. Native Feel
+
 We do not invent new concepts.
+
 - A module's controller is just a Laravel controller.
 - A module's provider is just a `Illuminate\Support\ServiceProvider`.
 - There are no "Magic Facades" or proprietary layers you have to learn.
@@ -64,6 +66,7 @@ modules/
 ```
 
 ### Key Differences from Standard Laravel
+
 1.  **`app/` directory**: We use an `app` folder for PHP code, mirroring the standard Laravel application structure.
 2.  **`composer.json`**: Each module has one. This allows you to extract a module into a standalone package easily in the future.
 3.  **`Providers/`**: A module **must** have at least one ServiceProvider to boot itself.
@@ -75,32 +78,39 @@ modules/
 How does Laravel know your module exists?
 
 ### 1. Auto-Discovery (`ModuleRegistry`)
+
 When the framework boots, the `LaravelModularServiceProvider` (in the core package) instantiates the `ModuleRegistry`.
+
 - It scans `modules/*` (or your configured path).
 - It reads `module.json` for every folder.
 - If the module is **enabled**, it registers the module's namespace and Service Provider.
 
 ### 2. Runtime Registration
+
 Unlike standard packages where you manually add them to `config/app.php`, **Laravel Modular does this dynamically**.
+
 - **Namespaces**: `Modules\Shop\` is registered to `modules/Shop/app/` via a runtime PSR-4 loader (or `composer.json` autoloading in production).
 - **Providers**: The class defined in `module.json` (`provider` key) is called.
 
 ### 3. Deep Discovery
+
 The `ModularServiceProvider` and `ModuleRegistry` automatically discover standard Laravel components without manual registration in your `ServiceProvider`.
 
-| Component | Path (inside module) | Logic |
-| :--- | :--- | :--- |
-| **Routes** | `routes/web.php`, `routes/api.php`, `routes/channels.php`, `routes/console.php` | Automatically loaded. `web` middleware applied to `web.php`, `api` prefix + middleware to `api.php`. |
-| **Config** | `config/*.php` | Merged into global config. Accessed via `Module::file.key` (or lowercase alias `module::file.key`). |
-| **Commands** | `app/Console/Commands/*.php` | Automatically registered if class is not abstract. |
-| **Policies** | `app/Policies/*.php` | Discovered if naming follows `ModelPolicy` convention (e.g., `ProductPolicy` for `Product` model). |
-| **Events** | `app/Listeners/*.php` | Discovered if the class has a `subscribe` method. |
-| **Views** | `resources/views/` | Registered under namespace `module-name::` (lowercase). |
-| **Migrations** | `database/migrations/` | Registered and run by `migrate` command. |
-| **Translations** | `lang/` | Registered under namespace `module-name::` (lowercase). |
+| Component        | Path (inside module)                                                            | Logic                                                                                                |
+| :--------------- | :------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------- |
+| **Routes**       | `routes/web.php`, `routes/api.php`, `routes/channels.php`, `routes/console.php` | Automatically loaded. `web` middleware applied to `web.php`, `api` prefix + middleware to `api.php`. |
+| **Config**       | `config/*.php`                                                                  | Merged into global config. Accessed via `Module::file.key` (or lowercase alias `module::file.key`).  |
+| **Commands**     | `app/Console/Commands/*.php`                                                    | Automatically registered if class is not abstract.                                                   |
+| **Policies**     | `app/Policies/*.php`                                                            | Discovered if naming follows `ModelPolicy` convention (e.g., `ProductPolicy` for `Product` model).   |
+| **Events**       | `app/Listeners/*.php`                                                           | Discovered if the class has a `subscribe` method.                                                    |
+| **Views**        | `resources/views/`                                                              | Registered under namespace `module-name::` (lowercase).                                              |
+| **Migrations**   | `database/migrations/`                                                          | Registered and run by `migrate` command.                                                             |
+| **Translations** | `lang/`                                                                         | Registered under namespace `module-name::` (lowercase).                                              |
 
 ### 4. Production Optimization
+
 Scanning the filesystem is slow. In production, you run `php artisan modular:cache`.
+
 - This creates `bootstrap/cache/modular.php`.
 - It contains a static array of all enabled modules and their configs.
 - The `ModuleRegistry` loads this array instantly, bypassing all filesystem checks.
@@ -139,10 +149,35 @@ This is the brain of your module.
     "name": "Shop",
     "namespace": "Modules\\Shop\\",
     "provider": "Modules\\Shop\\Providers\\ShopServiceProvider",
+    "route_prefix": "shop-api/v1",
     "removable": true,
     "disableable": true,
-    "requires": []
+    "requires": [],
+    "events": {
+        "Modules\\Shop\\Events\\OrderPlaced": [
+            "Modules\\Shop\\Listeners\\SendOrderInvoice",
+            "Modules\\Shop\\Listeners\\UpdateInventory"
+        ]
+    }
 }
 ```
 
+- **`route_prefix`**: (String, Optional) Automatically wraps all routes registered in `routes/web.php` and `routes/api.php` with this prefix and namespacing logic. By default, it is empty. If set to `shop-api/v1`, an API route will natively resolve to `api/shop-api/v1/your-route` entirely transparently!
 - **`disableable`**: (Boolean) If false, the module cannot be disabled via CLI/UI.
+- **`removable`**: (Boolean) If false, the module cannot be uninstalled via CLI/UI.
+- **`events`**: (Object) Explicit mapping of Event classes to an array of Listener classes. These take precedence over subscriber auto-discovery.
+
+---
+
+## Health Metrics & Diagnostics
+
+The architecture is designed to be highly verifiable. Running `php artisan modular:doctor` generates a comprehensive **Health Score (0-100)** for each module by analyzing 8 core architectural pillars:
+
+1. **Manifest Validity**: Is `module.json` present and readable?
+2. **Metadata Presence**: Are authors, version, and description defined?
+3. **Documentation**: Does the module have its own `README.md`?
+4. **Dependencies**: Are all modules listed in `requires` currently enabled and present?
+5. **Testing**: Does the `tests/Feature` or `tests/Unit` directory exist?
+6. **Provider Registration**: Is the `provider` namespace valid and resolvable?
+7. **Migrations**: Does the module contain database schemas?
+8. **Assets**: Are module public assets correctly linked to the host application?

@@ -17,7 +17,12 @@ final class ModularMigrateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'modular:migrate {module? : The name of the module} {--fresh : Fresh the database before migrating} {--seed : Seed the database after migrating}';
+    protected $signature = 'modular:migrate
+                            {module? : The name of the module}
+                            {--fresh : Fresh the database before migrating}
+                            {--seed : Seed the database after migrating}
+                            {--rollback : Roll back the last database migration}
+                            {--step=0 : The number of migrations to be reverted (used with --rollback)}';
 
     /**
      * The console command description.
@@ -45,14 +50,27 @@ final class ModularMigrateCommand extends Command
     }
 
     /**
-     * Run migrations for a specific module.
+     * Run (or rollback) migrations for a specific module.
      */
     protected function migrateModule(string $name, ModuleRegistry $registry): int
     {
-        $path = $registry->resolvePath($name, 'Database/Migrations');
+        $path = $registry->resolvePath($name, 'database/migrations');
 
         if (! is_dir($path)) {
             $this->warn("No migrations found for module: {$name}");
+
+            return self::SUCCESS;
+        }
+
+        if ($this->option('rollback')) {
+            $step = max(1, (int) $this->option('step'));
+            $this->info("Rolling back module: {$name} (step: {$step})...");
+
+            $this->call('migrate:rollback', [
+                '--path' => $path,
+                '--realpath' => true,
+                '--step' => $step,
+            ]);
 
             return self::SUCCESS;
         }

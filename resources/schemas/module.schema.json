@@ -37,13 +37,21 @@
         },
         "removable": {
             "type": "boolean",
-            "description": "Whether the module can be removed via the UI.",
+            "description": "Whether the module can be removed via commands",
             "default": true
         },
         "disableable": {
             "type": "boolean",
-            "description": "Whether the module can be disabled via the UI.",
+            "description": "Whether the module can be disabled via commands",
             "default": true
+        },
+        "route_prefix": {
+            "type": "string",
+            "description": "The URL prefix to automatically mount all module routes under"
+        },
+        "policies": {
+            "type": "object",
+            "description": "Model to Policy mapping"
         },
         "provider": {
             "type": ["string", "null"],
@@ -55,6 +63,18 @@
                 "type": "string"
             },
             "description": "List of modules this module depends on."
+        },
+        "events": {
+            "type": "object",
+            "patternProperties": {
+                "^.*$": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "description": "Explicit map of Event classes to their array of Listener classes."
         },
         "extra": {
             "type": "object",

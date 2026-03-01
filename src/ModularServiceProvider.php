@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace AlizHarb\Modular;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -32,7 +35,7 @@ final class ModularServiceProvider extends PackageServiceProvider
             ->hasViews();
 
         $this->publishes([
-            __DIR__.'/../resources/stubs' => base_path('stubs/modular'),
+            __DIR__ . '/../resources/stubs' => base_path('stubs/modular'),
         ], 'modular-stubs');
     }
 
@@ -49,7 +52,7 @@ final class ModularServiceProvider extends PackageServiceProvider
      */
     public function packageRegistered(): void
     {
-        $this->app->singleton(ModuleRegistry::class, fn () => new ModuleRegistry());
+        $this->app->singleton(ModuleRegistry::class, fn() => new ModuleRegistry());
 
         $this->app->alias(ModuleRegistry::class, 'modular.registry');
         $this->app->alias('Modular', Facades\Modular::class);
@@ -83,10 +86,44 @@ final class ModularServiceProvider extends PackageServiceProvider
         }
 
         $this->bootModularResources();
+        $this->registerBladeDirectives();
+
+        // Register custom Eloquent Factory namespace resolution for modules
+        Factory::guessFactoryNamesUsing(static function (string $modelName) {
+            if (Str::startsWith($modelName, 'Modules\\')) {
+                // Modules\Blog\Models\Post -> Modules\Blog\Database\Factories\PostFactory
+                $modulePathSegment = Str::after($modelName, 'Modules\\');
+                $moduleNameStr = Str::before($modulePathSegment, '\\');
+                $modelClass = Str::afterLast($modelName, '\\');
+
+                return "Modules\\{$moduleNameStr}\\Database\\Factories\\{$modelClass}Factory";
+            }
+
+            // Fallback to Laravel's default guessing correctly mapping App\Models to Database\Factories
+            return 'Database\\Factories\\' . class_basename($modelName) . 'Factory';
+        });
 
         $this->app->booted(function () {
             $this->registerModuleMiddleware();
             $this->registerModuleRoutes();
+        });
+    }
+
+    /**
+     * Register Blade directives for module awareness.
+     */
+    protected function registerBladeDirectives(): void
+    {
+        Blade::if('moduleEnabled', function (string $module): bool {
+            $registry = $this->app->make(ModuleRegistry::class);
+
+            return $registry->moduleExists($module) && $registry->isEnabled($module);
+        });
+
+        Blade::if('moduleDisabled', function (string $module): bool {
+            $registry = $this->app->make(ModuleRegistry::class);
+
+            return ! $registry->moduleExists($module) || ! $registry->isEnabled($module);
         });
     }
 
@@ -190,17 +227,23 @@ final class ModularServiceProvider extends PackageServiceProvider
                 continue;
             }
 
+            $prefix = $module['route_prefix'] ?? '';
+
             // Web Routes
             if (File::exists($web = "{$routesPath}/web.php")) {
-                Route::middleware('web')
-                    ->group($web);
+                $group = Route::middleware('web');
+                if ($prefix) {
+                    $group->prefix($prefix)->as("{$prefix}.");
+                }
+                $group->group($web);
             }
 
             // API Routes
             if (File::exists($api = "{$routesPath}/api.php")) {
-                Route::prefix('api')
-                    ->middleware('api')
-                    ->group($api);
+                $group = Route::middleware('api');
+                $group->prefix($prefix ? "api/{$prefix}" : 'api');
+                $group->as($prefix ? "api.{$prefix}." : 'api.');
+                $group->group($api);
             }
 
             // Channel Routes (Broadcasting)

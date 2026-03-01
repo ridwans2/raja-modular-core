@@ -36,7 +36,7 @@ trait ModularGenerator
             $module = $this->getModule();
             $name = Str::replaceFirst($this->rootNamespace(), '', $name);
 
-            return $this->getModuleRegistry()->resolvePath((string) $module, 'app/'.str_replace('\\', '/', $name).'.php');
+            return $this->getModuleRegistry()->resolvePath((string) $module, 'app/' . str_replace('\\', '/', $name) . '.php');
         }
 
         return parent::getPath($name);
@@ -57,5 +57,26 @@ trait ModularGenerator
         }
 
         return parent::getDefaultNamespace($rootNamespace);
+    }
+
+    /**
+     * Resolve the fully-qualified path to the stub.
+     * Overrides the default Laravel GeneratorCommand behavior to allow per-module stubs.
+     *
+     * @param string $stub
+     */
+    protected function resolveStubPath($stub): string
+    {
+        if ($this->isModular()) {
+            $module = $this->getModule();
+            $moduleStubPath = $this->getModuleRegistry()->resolvePath((string) $module, 'stubs/' . basename($stub));
+
+            if (file_exists($moduleStubPath)) {
+                return $moduleStubPath;
+            }
+        }
+
+        // @phpstan-ignore-next-line
+        return parent::resolveStubPath($stub);
     }
 }

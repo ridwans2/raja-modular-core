@@ -16,11 +16,12 @@ We override 29+ native Artisan commands to provide a seamless "first-class" modu
 
 - 🏗️ **Native Experience**: 29+ Artisan commands (`make:model`, `make:controller`, etc.) fully support `--module`.
 - ⚡ **Zero Config Autoloading**: Intelligent `composer-merge-plugin` integration for isolated module dependencies.
+- 🚦 **Topological Sorting**: Strict dependency graph resolution ensures base modules always boot before their dependents.
 - 🚀 **Performance First**: Built-in discovery caching (`modular:cache`) for near-zero overhead in production.
 - 🔄 **Dynamic Activation**: Enable or disable modules on the fly via `module:enable` and `module:disable`.
 - 🔍 **Auto-Discovery**: Automatic registration of Artisan commands, Policies, and Event Listeners within modules.
 - 🔌 **Decoupled Architecture**: Strictly typed `ModuleRegistry` and traits for maximum stability.
-- 🛠️ **Full Customizability**: Publishable stubs, dynamic config paths, and global helpers.
+- 🛠️ **Full Customizability**: Override generation stubs globally or specific to a single module via `modules/Shop/stubs`.
 - ✅ **Laravel 11 & 12 Ready**: Optimized for PHP 8.2+ and the latest framework features.
 - 🎨 **Asset Management**: Seamless Vite integration via `modular_vite()` and asset linking.
 
@@ -54,6 +55,7 @@ php artisan modular:install
 > **Note**: This will automatically install and configure `wikimedia/composer-merge-plugin` to handle your module dependencies.
 
 ### Manual Setup
+
 If you prefer to configure things manually, follow these steps:
 
 **1. Composer Autoloading**
@@ -80,20 +82,20 @@ To enable hot-readling for module assets, create a `vite.modular.js` file in you
 
 ```javascript
 // vite.config.js
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import { modularLoader } from './vite.modular.js';
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+import { modularLoader } from "./vite.modular.js";
 
 export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/css/app.css', 
-                'resources/js/app.js',
-                ...modularLoader.inputs() // Add this line
+                "resources/css/app.css",
+                "resources/js/app.js",
+                ...modularLoader.inputs(), // Add this line
             ],
             refresh: [
-                ...modularLoader.refreshPaths() // Add this line
+                ...modularLoader.refreshPaths(), // Add this line
             ],
         }),
     ],
@@ -135,17 +137,30 @@ php artisan modular:migrate
 # Migrate a specific module
 php artisan modular:migrate Blog --fresh --seed
 
-# Migrate a specific module
-php artisan modular:migrate Blog --fresh --seed
+# Rollback a module's migrations
+php artisan modular:migrate Blog --rollback --step=2
 
 # Run module seeders
 php artisan modular:seed Blog
+```
 
+### Module Management & Utilities
+
+```bash
 # List all modules and discovered resources
 php artisan modular:list
 
+# Visualize module dependencies in an ASCII tree
+php artisan modular:list --tree
+
+# Diagnose common configuration issues and view Health Scores
+php artisan modular:doctor
+
 # Sync module dependencies to root composer.json
 php artisan modular:sync
+
+# Export a module to a standalone Composer package
+php artisan modular:export Blog --path=packages/blog
 
 # Run npm commands for a module (Workspaces)
 php artisan modular:npm Blog install
@@ -159,6 +174,20 @@ php artisan modular:debug Blog
 
 # Run module tests
 php artisan modular:test Blog
+```
+
+### Blade Directives
+
+Use our dedicated Blade directives to conditionally render UI based on module availability:
+
+```blade
+@moduleEnabled('Blog')
+    <a href="{{ route('blog.index') }}">Read the Blog</a>
+@endmoduleEnabled
+
+@moduleDisabled('Store')
+    <p>Our store is currently offline.</p>
+@endmoduleDisabled
 ```
 
 ### 🏎️ Performance Optimization
@@ -198,7 +227,7 @@ Access module information globally with strictly typed helpers:
 
 ```php
 // Get the registry or specific module config
-$modules = module(); 
+$modules = module();
 $blogConfig = module('Blog');
 
 // Get absolute path to a resource
@@ -234,6 +263,7 @@ php artisan vendor:publish --tag="modular-config"
 ```
 
 You can customize:
+
 - **Paths**: Move modules to `packages/` or any custom directory.
 - **Stubs**: Enable custom stubs to strictly enforce your team's coding standards.
 - **Composer**: Set default fields (`vendor`, `author`, `license`) for generated `composer.json` files.
@@ -254,15 +284,15 @@ vendor/bin/pest
 
 Extend your modular architecture with our official ecosystem packages:
 
-| Package | Description |
-| :--- | :--- |
-| **[Laravel Themer](https://github.com/alizharb/laravel-themer)** | For advanced theme management support |
-| **[Modular Livewire](https://github.com/alizharb/laravel-modular-livewire)** | Provides automatic Livewire component discovery and registration within modules. |
-| **[Modular JS](https://github.com/alizharb/laravel-modular-js)** | Enables JS discovery within modular structures and provides zero-config autoloading for modules. |
-| **[Modular Filament](https://github.com/alizharb/laravel-modular-filament)** | Enables Filament v5 admin panel integration with automatic discovery in modules. |
-| **[Filament Themer Launcher](https://github.com/alizharb/filament-themer-luncher)** | Provides a comprehensive Filament v5 interface for managing and switching themes. |
-| **[Filament Modular Launcher](https://github.com/alizharb/filament-modular-luncher)** | A powerful Filament v5 manager for listing, toggling, and backing up system modules. |
-| **[Laravel Hooks](https://github.com/alizharb/laravel-hooks)** | Adds a universal extensibility and plugin system for Laravel applications. |
+| Package                                                                               | Description                                                                                      |
+| :------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------- |
+| **[Laravel Themer](https://github.com/alizharb/laravel-themer)**                      | For advanced theme management support                                                            |
+| **[Modular Livewire](https://github.com/alizharb/laravel-modular-livewire)**          | Provides automatic Livewire component discovery and registration within modules.                 |
+| **[Modular JS](https://github.com/alizharb/laravel-modular-js)**                      | Enables JS discovery within modular structures and provides zero-config autoloading for modules. |
+| **[Modular Filament](https://github.com/alizharb/laravel-modular-filament)**          | Enables Filament v5 admin panel integration with automatic discovery in modules.                 |
+| **[Filament Themer Launcher](https://github.com/alizharb/filament-themer-luncher)**   | Provides a comprehensive Filament v5 interface for managing and switching themes.                |
+| **[Filament Modular Launcher](https://github.com/alizharb/filament-modular-luncher)** | A powerful Filament v5 manager for listing, toggling, and backing up system modules.             |
+| **[Laravel Hooks](https://github.com/alizharb/laravel-hooks)**                        | Adds a universal extensibility and plugin system for Laravel applications.                       |
 
 ### ⚡ JavaScript & Vite Integration
 

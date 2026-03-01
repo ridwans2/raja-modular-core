@@ -36,9 +36,11 @@ class ModularInstallCommand extends Command
 
         $this->publishResources();
         $this->configureAutoloading();
+        $this->configureModuleAutoloading();
         $this->configureVite();
         $this->createViteBaseHelper();
         $this->configureNpmWorkspaces();
+        $this->configurePhpUnit();
         $this->configureTestScript();
 
         $this->components->info('Laravel Modular has been successfully installed! 🚀');
@@ -94,8 +96,8 @@ class ModularInstallCommand extends Command
         $composer = json_decode((string) File::get($composerJsonPath), true);
 
         // 1. Configure standard PSR-4 for the Modules namespace
-        $rootNamespace = config('modular.naming.root_namespace', 'Modules').'\\';
-        $modulesPath = Str::after(config('modular.paths.modules', base_path('modules')), base_path().'/').'/';
+        $rootNamespace = config('modular.naming.root_namespace', 'Modules') . '\\';
+        $modulesPath = Str::after(config('modular.paths.modules', base_path('modules')), base_path() . '/') . '/';
 
         if (! isset($composer['autoload']['psr-4'][$rootNamespace])) {
             if ($this->confirm("Would you like to add optimized PSR-4 autoloading for '{$rootNamespace}' to your composer.json?", true)) {
@@ -108,7 +110,7 @@ class ModularInstallCommand extends Command
         // 2. Configure Composer Merge Plugin for module-specific dependencies
         $mergeConfig = $composer['extra']['merge-plugin'] ?? [];
         $include = (array) ($mergeConfig['include'] ?? []);
-        $relativeMergePath = $modulesPath.'*/composer.json';
+        $relativeMergePath = $modulesPath . '*/composer.json';
 
         if (! in_array($relativeMergePath, $include)) {
             $this->components->warn('Composer Merge Plugin is recommended for module-specific dependencies.');
@@ -125,6 +127,56 @@ class ModularInstallCommand extends Command
         }
 
         $this->warn('Please run "composer dump-autoload" to apply autoloading changes.');
+    }
+
+    /**
+     * Patch existing module composer.json files to include autoload-dev for Tests.
+     */
+    protected function configureModuleAutoloading(): void
+    {
+        $modulesPath = config('modular.paths.modules', base_path('modules'));
+
+        if (! is_string($modulesPath) || ! File::isDirectory($modulesPath)) {
+            return;
+        }
+
+        $directories = File::directories($modulesPath);
+
+        foreach ($directories as $directory) {
+            $composerJsonPath = $directory . '/composer.json';
+
+            if (! File::exists($composerJsonPath)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $composer */
+            $composer = json_decode((string) File::get($composerJsonPath), true);
+            $needsUpdate = false;
+
+            // Try to figure out the module namespace
+            $name = basename($directory);
+            $moduleNamespace = "Modules\\{$name}\\";
+
+            // Look for custom namespace in psr-4 if standard is missing
+            if (isset($composer['autoload']['psr-4'])) {
+                $keys = array_keys($composer['autoload']['psr-4']);
+                if (!empty($keys)) {
+                    $moduleNamespace = rtrim($keys[0], '\\') . '\\';
+                }
+            }
+
+            $testsNamespace = $moduleNamespace . "Tests\\";
+
+            if (! isset($composer['autoload-dev']['psr-4'][$testsNamespace])) {
+                $composer['autoload-dev']['psr-4'][$testsNamespace] = 'tests/';
+                $needsUpdate = true;
+            }
+
+            if ($needsUpdate) {
+                File::put($composerJsonPath, (string) json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+                $this->components->info("Updated autoload-dev for module [{$name}] to support native testing.");
+            }
+        }
     }
 
     /**
@@ -153,7 +205,7 @@ class ModularInstallCommand extends Command
                         $viteImport = $matches[0];
                         $content = str_replace(
                             $viteImport,
-                            $viteImport."\nimport { modularLoader } from './vite.modular.js';",
+                            $viteImport . "\nimport { modularLoader } from './vite.modular.js';",
                             $content
                         );
                     }
@@ -203,7 +255,7 @@ class ModularInstallCommand extends Command
             return;
         }
 
-        $stubPath = __DIR__.'/../../resources/stubs/vite.modular.js.stub';
+        $stubPath = __DIR__ . '/../../resources/stubs/vite.modular.js.stub';
 
         if (File::exists($stubPath)) {
             $content = (string) File::get($stubPath);
@@ -223,7 +275,7 @@ class ModularInstallCommand extends Command
             return;
         }
 
-        $stubPath = __DIR__.'/../../resources/stubs/vite.base.js.stub';
+        $stubPath = __DIR__ . '/../../resources/stubs/vite.base.js.stub';
 
         if (File::exists($stubPath)) {
             $content = (string) File::get($stubPath);
@@ -246,7 +298,7 @@ class ModularInstallCommand extends Command
         /** @var array<string, mixed> $packageJson */
         $packageJson = json_decode((string) File::get($packageJsonPath), true);
 
-        $modulesPath = Str::after(config('modular.paths.modules', base_path('modules')), base_path().'/').'/*';
+        $modulesPath = Str::after(config('modular.paths.modules', base_path('modules')), base_path() . '/') . '/*';
         $workspaces = (array) ($packageJson['workspaces'] ?? []);
 
         if (! in_array($modulesPath, $workspaces)) {
@@ -259,6 +311,52 @@ class ModularInstallCommand extends Command
                 File::put($packageJsonPath, (string) json_encode($packageJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
                 $this->components->info("Configured package.json workspaces to include {$modulesPath}");
                 $this->warn('Please run "npm install" to initialize workspaces.');
+            }
+        }
+    }
+
+    /**
+     * Configure phpunit.xml to include module test directories.
+     */
+    protected function configurePhpUnit(): void
+    {
+        $phpUnitPath = base_path('phpunit.xml');
+
+        if (! File::exists($phpUnitPath)) {
+            $phpUnitPath = base_path('phpunit.xml.dist');
+            if (! File::exists($phpUnitPath)) {
+                return;
+            }
+        }
+
+        $content = (string) File::get($phpUnitPath);
+        $modulesPath = Str::after(config('modular.paths.modules', base_path('modules')), base_path() . '/');
+        $needsUpdate = false;
+
+        // Add Feature test directory
+        if (str_contains($content, '<testsuite name="Feature">') && ! str_contains($content, "{$modulesPath}/*/tests/Feature")) {
+            $content = preg_replace(
+                '/(<testsuite name="Feature">\s*<directory[^>]*>.*?<\/directory>\s*)/',
+                "$1<directory suffix=\"Test.php\">./{$modulesPath}/*/tests/Feature</directory>\n        ",
+                $content
+            );
+            $needsUpdate = true;
+        }
+
+        // Add Unit test directory
+        if (str_contains($content, '<testsuite name="Unit">') && ! str_contains($content, "{$modulesPath}/*/tests/Unit")) {
+            $content = preg_replace(
+                '/(<testsuite name="Unit">\s*<directory[^>]*>.*?<\/directory>\s*)/',
+                "$1<directory suffix=\"Test.php\">./{$modulesPath}/*/tests/Unit</directory>\n        ",
+                $content
+            );
+            $needsUpdate = true;
+        }
+
+        if ($needsUpdate) {
+            if ($this->confirm("Would you like to automatically configure PHPUnit to run module tests natively?", true)) {
+                File::put($phpUnitPath, $content);
+                $this->components->info('Configured phpunit to include module test directories.');
             }
         }
     }
@@ -280,35 +378,14 @@ class ModularInstallCommand extends Command
         $scripts = $composer['scripts'] ?? [];
         $testScript = $scripts['test'] ?? null;
 
-        $modularTestCommand = '@php artisan modular:test';
         $needsUpdate = false;
 
         // If 'test' script doesn't exist, create it
         if (! $testScript) {
-            if ($this->confirm('Would you like to add a "test" script to run both app and module tests?', true)) {
+            if ($this->confirm('Would you like to add a "test" script to your composer.json?', true)) {
                 $composer['scripts']['test'] = [
                     '@php artisan test',
-                    $modularTestCommand,
                 ];
-                $needsUpdate = true;
-            }
-        }
-        // If 'test' script exists and is a string
-        elseif (is_string($testScript) && ! str_contains($testScript, 'modular:test')) {
-            $this->components->warn('Your "test" script logic might skip module tests.');
-            if ($this->confirm('Update "test" script to include modular tests separately?', true)) {
-                $composer['scripts']['test'] = [
-                    $testScript,
-                    $modularTestCommand,
-                ];
-                $needsUpdate = true;
-            }
-        }
-        // If 'test' script exists and is an array
-        elseif (is_array($testScript) && ! in_array($modularTestCommand, $testScript)) {
-            $this->components->warn('Your "test" script logic might skip module tests.');
-            if ($this->confirm('Update "test" script to include modular tests separately?', true)) {
-                $composer['scripts']['test'][] = $modularTestCommand;
                 $needsUpdate = true;
             }
         }
@@ -316,8 +393,6 @@ class ModularInstallCommand extends Command
         if ($needsUpdate) {
             File::put($composerJsonPath, (string) json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
             $this->components->info('Updated composer.json "test" script.');
-
-            $this->warn('IMPORTANT: Please ensure your root phpunit.xml excludes "modules/*/tests" to avoid duplicate or failed runs.');
         }
     }
 }
