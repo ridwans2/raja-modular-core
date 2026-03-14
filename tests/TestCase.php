@@ -1,8 +1,8 @@
 <?php
 
-namespace AlizHarb\Modular\Tests;
+namespace Ridwans2\RajaModularCore\Tests;
 
-use AlizHarb\Modular\ModularServiceProvider;
+use Ridwans2\RajaModularCore\ModularServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -63,7 +63,7 @@ class TestCase extends Orchestra
         config()->set('modular.cache.path', $basePath.'/bootstrap/cache/modular.php');
 
         /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-modular_table.php.stub';
+        $migration = include __DIR__.'/../database/migrations/create_raja-modular-core_table.php.stub';
         $migration->up();
         */
     }

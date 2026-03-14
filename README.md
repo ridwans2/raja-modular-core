@@ -1,14 +1,14 @@
-# Laravel Modular 🚀
+# Raja Modular Core 🚀
 
 <img src="art/banner.png" alt="Laravel Modular Banner" width="100%" height="300">
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/alizharb/laravel-modular.svg?style=flat-square)](https://packagist.org/packages/alizharb/laravel-modular)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/alizharb/laravel-modular/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/alizharb/laravel-modular/actions?query=workflow%3ATests+branch%3Amain)
-[![GitHub PHPStan Action Status](https://img.shields.io/github/actions/workflow/status/alizharb/laravel-modular/phpstan.yml?branch=main&label=phpstan&style=flat-square)](https://github.com/alizharb/laravel-modular/actions?query=workflow%3APHPStan+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/alizharb/laravel-modular.svg?style=flat-square)](https://packagist.org/packages/alizharb/laravel-modular)
-[![Licence](https://img.shields.io/packagist/l/alizharb/laravel-modular.svg?style=flat-square)](https://packagist.org/packages/alizharb/laravel-modular)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/ridwans2/raja-modular-core.svg?style=flat-square)](https://packagist.org/packages/ridwans2/raja-modular-core)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/ridwans2/raja-modular-core/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/ridwans2/raja-modular-core/actions?query=workflow%3ATests+branch%3Amain)
+[![GitHub PHPStan Action Status](https://img.shields.io/github/actions/workflow/status/ridwans2/raja-modular-core/phpstan.yml?branch=main&label=phpstan&style=flat-square)](https://github.com/ridwans2/raja-modular-core/actions?query=workflow%3APHPStan+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/ridwans2/raja-modular-core.svg?style=flat-square)](https://packagist.org/packages/ridwans2/raja-modular-core)
+[![Licence](https://img.shields.io/packagist/l/ridwans2/raja-modular-core.svg?style=flat-square)](https://packagist.org/packages/ridwans2/raja-modular-core)
 
-**Laravel Modular** is a professional, framework-agnostic modular system engineered for Laravel 11/12. It empowers you to build scalable, strictly typed, and decoupled applications with zero configuration overhead.
+**Raja Modular Core** is a professional, framework-agnostic modular system engineered for Laravel 11/12. It empowers you to build scalable, strictly typed, and decoupled applications with zero configuration overhead.
 
 We override 29+ native Artisan commands to provide a seamless "first-class" modular experience, feeling exactly like standard Laravel but better.
 
@@ -21,7 +21,7 @@ We override 29+ native Artisan commands to provide a seamless "first-class" modu
 - 🔄 **Dynamic Activation**: Enable or disable modules on the fly via `module:enable` and `module:disable`.
 - 🔍 **Auto-Discovery**: Automatic registration of Artisan commands, Policies, and Event Listeners within modules.
 - 🔌 **Decoupled Architecture**: Strictly typed `ModuleRegistry` and traits for maximum stability.
-- 🛠️ **Full Customizability**: Override generation stubs globally or specific to a single module via `modules/Shop/stubs`.
+- 🛠️ **Full Customizability**: Override generation stubs globally or specific to a single module via `aplikasi/Shop/stubs`.
 - ✅ **Laravel 11 & 12 Ready**: Optimized for PHP 8.2+ and the latest framework features.
 - 🎨 **Asset Management**: Seamless Vite integration via `modular_vite()` and asset linking.
 
@@ -31,10 +31,10 @@ We override 29+ native Artisan commands to provide a seamless "first-class" modu
 
 Enhance your modular application with our official packages:
 
-- **[Laravel Hooks](https://github.com/AlizHarb/laravel-hooks)**: specific modular hook system support.
-- **[Filament Integration](https://github.com/AlizHarb/laravel-modular-filament)**: Seamless Filament admin panel integration in modules.
-- **[Livewire Integration](https://github.com/AlizHarb/laravel-modular-livewire)**: First-class Livewire component support in modules.
-- **[Laravel Themer](https://github.com/AlizHarb/laravel-themer)**: Advanced theme management system.
+- **[Raja Hooks](https://github.com/ridwans2/raja-hooks)**: specific modular hook system support.
+- **[Filament Integration](https://github.com/ridwans2/raja-modular-filament)**: Seamless Filament admin panel integration in modules.
+- **[Livewire Integration](https://github.com/ridwans2/raja-modular-livewire)**: First-class Livewire component support in modules.
+- **[Raja Themer](https://github.com/ridwans2/raja-themer)**: Advanced theme management system.
 
 ---
 
@@ -43,7 +43,7 @@ Enhance your modular application with our official packages:
 Install the package via Composer:
 
 ```bash
-composer require alizharb/laravel-modular
+composer require ridwans2/raja-modular-core
 ```
 
 Run the installation command to automatically configure your application:
@@ -65,13 +65,13 @@ Add the following to your root `composer.json` to ensure module namespaces are a
 "autoload": {
     "psr-4": {
         "App\\": "app/",
-        "Modules\\": "modules/"
+        "Aplikasi\\": "aplikasi/"
     }
 },
 "extra": {
     "merge-plugin": {
         "include": [
-            "modules/*/composer.json"
+            "aplikasi/*/composer.json"
         ]
     }
 }
@@ -194,7 +194,7 @@ Use our dedicated Blade directives to conditionally render UI based on module av
 
 For maximum production performance, we recommended the following:
 
-1.  **Optimized PSR-4**: Ensure `"Modules\\": "modules/"` is in your root `composer.json`. `modular:install` handles this for you.
+1.  **Optimized PSR-4**: Ensure `"Aplikasi\\": "aplikasi/"` is in your root `composer.json`. `modular:install` handles this for you.
 2.  **Dependency Syncing**: Use `php artisan modular:sync` to merge module dependencies into your root `composer.json` and disable the merge-plugin.
 3.  **Discovery Caching**: Always run `php artisan modular:cache` in your deployment pipeline.
 
@@ -204,8 +204,8 @@ Define middleware in your `module.json`:
 
 ```json
 "middleware": {
-    "web": ["Modules\\Blog\\Http\\Middleware\\TrackVisits"],
-    "blog.admin": "Modules\\Blog\\Http\\Middleware\\AdminGuard"
+    "web": ["Aplikasi\\Blog\\Http\\Middleware\\TrackVisits"],
+    "blog.admin": "Aplikasi\\Blog\\Http\\Middleware\\AdminGuard"
 }
 ```
 
@@ -286,13 +286,13 @@ Extend your modular architecture with our official ecosystem packages:
 
 | Package                                                                               | Description                                                                                      |
 | :------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------- |
-| **[Laravel Themer](https://github.com/alizharb/laravel-themer)**                      | For advanced theme management support                                                            |
-| **[Modular Livewire](https://github.com/alizharb/laravel-modular-livewire)**          | Provides automatic Livewire component discovery and registration within modules.                 |
-| **[Modular JS](https://github.com/alizharb/laravel-modular-js)**                      | Enables JS discovery within modular structures and provides zero-config autoloading for modules. |
-| **[Modular Filament](https://github.com/alizharb/laravel-modular-filament)**          | Enables Filament v5 admin panel integration with automatic discovery in modules.                 |
-| **[Filament Themer Launcher](https://github.com/alizharb/filament-themer-luncher)**   | Provides a comprehensive Filament v5 interface for managing and switching themes.                |
-| **[Filament Modular Launcher](https://github.com/alizharb/filament-modular-luncher)** | A powerful Filament v5 manager for listing, toggling, and backing up system modules.             |
-| **[Laravel Hooks](https://github.com/alizharb/laravel-hooks)**                        | Adds a universal extensibility and plugin system for Laravel applications.                       |
+| **[Laravel Themer](https://github.com/ridwans2/laravel-themer)**                      | For advanced theme management support                                                            |
+| **[Modular Livewire](https://github.com/ridwans2/raja-modular-core-livewire)**          | Provides automatic Livewire component discovery and registration within modules.                 |
+| **[Modular JS](https://github.com/ridwans2/raja-modular-core-js)**                      | Enables JS discovery within modular structures and provides zero-config autoloading for modules. |
+| **[Modular Filament](https://github.com/ridwans2/raja-modular-core-filament)**          | Enables Filament v5 admin panel integration with automatic discovery in modules.                 |
+| **[Filament Themer Launcher](https://github.com/ridwans2/filament-themer-luncher)**   | Provides a comprehensive Filament v5 interface for managing and switching themes.                |
+| **[Filament Modular Launcher](https://github.com/ridwans2/filament-modular-luncher)** | A powerful Filament v5 manager for listing, toggling, and backing up system modules.             |
+| **[Laravel Hooks](https://github.com/ridwans2/laravel-hooks)**                        | Adds a universal extensibility and plugin system for Laravel applications.                       |
 
 ### ⚡ JavaScript & Vite Integration
 
@@ -306,7 +306,7 @@ We provide first-class support for modern frontend tooling:
 
 ## 💖 Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel Modular development. If you are interested in becoming a sponsor, please visit the [Laravel Modular GitHub Sponsors page](https://github.com/sponsors/alizharb).
+We would like to extend our thanks to the following sponsors for funding Laravel Modular development. If you are interested in becoming a sponsor, please visit the [Laravel Modular GitHub Sponsors page](https://github.com/sponsors/ridwans2).
 
 ---
 

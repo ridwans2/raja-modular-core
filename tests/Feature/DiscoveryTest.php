@@ -1,6 +1,6 @@
 <?php
 
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 
@@ -40,7 +40,7 @@ PHP;
     $registry->discoverModules();
 
     // In tests, we need to manually trigger the command registration since the SP already ran
-    $sp = new \AlizHarb\Modular\ModularServiceProvider(app());
+    $sp = new \Ridwans2\RajaModularCore\ModularServiceProvider(app());
     $reflection = new \ReflectionClass($sp);
     $method = $reflection->getMethod('registerModularCommands');
     $method->setAccessible(true);
@@ -63,7 +63,7 @@ it('discovers policies in modules', function () {
     file_put_contents($this->modulePath.'/module.json', json_encode(['name' => 'Blog', 'active' => true]));
 
     // Discovery happens in bootModularResources
-    app(AlizHarb\Modular\ModularServiceProvider::class, ['app' => app()])->packageBooted();
+    app(Ridwans2\RajaModularCore\ModularServiceProvider::class, ['app' => app()])->packageBooted();
 
     // Note: Gate::getPolicyFor requires an instance or class name
     // Since these classes don't exist in the real autoloader of this test process

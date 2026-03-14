@@ -44,8 +44,8 @@ On the next request, `ModuleRegistry` checks for this file. If found, it **skips
 The `ModularServiceProvider` allows external packages to hook into the lifecycle.
 
 ```php
-use AlizHarb\Modular\ModularServiceProvider;
-use AlizHarb\Modular\Contracts\ModularPlugin;
+use Ridwans2\RajaModularCore\ModularServiceProvider;
+use Ridwans2\RajaModularCore\Contracts\ModularPlugin;
 
 class MyPlugin implements ModularPlugin
 {
@@ -62,7 +62,7 @@ class MyPlugin implements ModularPlugin
 ModularServiceProvider::registerPlugin(new MyPlugin());
 ```
 
-This is how extensions like `laravel-modular-livewire` inject their own component discovery logic without modifying the core.
+This is how extensions like `raja-modular-core-livewire` inject their own component discovery logic without modifying the core.
 
 ---
 
@@ -90,4 +90,4 @@ php artisan modular:check
 
 By default, we use the `FileActivator` which stores enabled/disabled state in `bootstrap/cache/modules_statuses.json`.
 
-You can implement your own (e.g., Database storage) by implementing `AlizHarb\Modular\Contracts\Activator` and changing `config/modular.php`.
+You can implement your own (e.g., Database storage) by implementing `Ridwans2\RajaModularCore\Contracts\Activator` and changing `config/modular.php`.

@@ -21,12 +21,12 @@ it('registers modular routes with custom route prefix from module.json', functio
 
     file_put_contents($this->modulePath . '/routes/web.php', '<?php use Illuminate\Support\Facades\Route; Route::get("ping", fn() => "pong")->name("ping");');
 
-    $registry = $this->app->make(\AlizHarb\Modular\ModuleRegistry::class);
+    $registry = $this->app->make(\Ridwans2\RajaModularCore\ModuleRegistry::class);
     $registry->discoverModules();
     $registry->getActivator()->setStatus('RouteModule', true);
 
     // Force route loading via reflection
-    $provider = new \AlizHarb\Modular\ModularServiceProvider($this->app);
+    $provider = new \Ridwans2\RajaModularCore\ModularServiceProvider($this->app);
     $reflection = new \ReflectionMethod($provider, 'registerModuleRoutes');
     $reflection->setAccessible(true);
     $reflection->invoke($provider);

@@ -12,7 +12,7 @@ Get started with Laravel Modular in seconds.
 Install the package via Composer:
 
 ```bash
-composer require alizharb/laravel-modular
+composer require ridwans2/raja-modular-core
 ```
 
 ## Setup

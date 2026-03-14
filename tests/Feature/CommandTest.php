@@ -1,6 +1,6 @@
 <?php
 
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 use Illuminate\Support\Facades\File;
 
 afterEach(function () {
@@ -81,7 +81,7 @@ it('modular:test runs tests for a module', function () {
     $modulePath = base_path('modules/Blog');
     File::ensureDirectoryExists($modulePath.'/tests');
     File::put($modulePath.'/module.json', json_encode(['name' => 'Blog']));
-    File::put($modulePath.'/tests/ExampleTest.php', '<?php namespace Modules\Blog\Tests; use AlizHarb\Modular\Tests\TestCase; class ExampleTest extends TestCase { public function test_basic() { $this->assertTrue(true); } }');
+    File::put($modulePath.'/tests/ExampleTest.php', '<?php namespace Modules\Blog\Tests; use Ridwans2\RajaModularCore\Tests\TestCase; class ExampleTest extends TestCase { public function test_basic() { $this->assertTrue(true); } }');
 
     // Create a mock pest binary in the test app's vendor/bin
     File::ensureDirectoryExists(base_path('vendor/bin'));

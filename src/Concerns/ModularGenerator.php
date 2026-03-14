@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Concerns;
+namespace Ridwans2\RajaModularCore\Concerns;
 
 use Illuminate\Support\Str;
 

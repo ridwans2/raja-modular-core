@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Concerns;
+namespace Ridwans2\RajaModularCore\Concerns;
 
-use AlizHarb\Modular\Commands;
-use AlizHarb\Modular\Commands\Laravel as ModularConsole;
+use Ridwans2\RajaModularCore\Commands;
+use Ridwans2\RajaModularCore\Commands\Laravel as ModularConsole;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Console as DBConsole;
 use Illuminate\Foundation\Console as LaravelConsole;

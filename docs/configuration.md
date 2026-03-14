@@ -51,7 +51,7 @@ How we remember if a module is enabled or disabled.
 ```php
 'activators' => [
     'file' => [
-        'class' => \AlizHarb\Modular\Activators\FileActivator::class,
+        'class' => \Ridwans2\RajaModularCore\Activators\FileActivator::class,
         'statuses-file' => base_path('modules_statuses.json'),
         'cache-key' => 'activator.installed_modules',
         'cache-lifetime' => 604800,

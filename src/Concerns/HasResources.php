@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Concerns;
+namespace Ridwans2\RajaModularCore\Concerns;
 
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 
@@ -149,12 +149,12 @@ trait HasResources
      */
     protected function registerThemerIntegration(ModuleRegistry $registry, array $modules): void
     {
-        if (class_exists('AlizHarb\\Themer\\ThemeServiceProvider')) {
-            /** @var \AlizHarb\Themer\ThemeServiceProvider $themer */
-            $themer = app('AlizHarb\\Themer\\ThemeServiceProvider');
+        if (class_exists('Ridwans2\\Themer\\ThemeServiceProvider')) {
+            /** @var \Ridwans2\Themer\ThemeServiceProvider $themer */
+            $themer = app('Ridwans2\\Themer\\ThemeServiceProvider');
 
-            if (class_exists('AlizHarb\\Themer\\Plugins\\ModulesPlugin')) {
-                $pluginClass = 'AlizHarb\\Themer\\Plugins\\ModulesPlugin';
+            if (class_exists('Ridwans2\\Themer\\Plugins\\ModulesPlugin')) {
+                $pluginClass = 'Ridwans2\\Themer\\Plugins\\ModulesPlugin';
                 $themer::registerPlugin(new $pluginClass());
             }
         }

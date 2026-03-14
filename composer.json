@@ -1,5 +1,5 @@
 {
-    "name": "alizharb/laravel-modular",
+    "name": "ridwans2/raja-modular-core",
     "description": "A professional, framework-agnostic modular architecture for Laravel 11+. Features zero-config autoloading, 29+ Artisan command overrides, and seamless Vite integration.",
     "type": "library",
     "license": "MIT",
@@ -30,7 +30,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AlizHarb\\Modular\\": "src/"
+            "Ridwans2\\RajaModularCore\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -38,16 +38,16 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "AlizHarb\\Modular\\Tests\\": "tests/"
+            "Ridwans2\\RajaModularCore\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "AlizHarb\\Modular\\ModularServiceProvider"
+                "Ridwans2\\RajaModularCore\\ModularServiceProvider"
             ],
             "aliases": {
-                "Modular": "AlizHarb\\Modular\\Facades\\Modular"
+                "Modular": "Ridwans2\\RajaModularCore\\Facades\\Modular"
             }
         },
         "merge-plugin": {
@@ -61,13 +61,13 @@
         }
     },
     "suggest": {
-        "alizharb/laravel-themer": "For advanced theme management support",
-        "alizharb/laravel-modular-livewire": "Provides automatic Livewire component discovery and registration within modules.",
-        "alizharb/laravel-modular-js": "Enables JS discovery within modular structures and provides zero-config autoloading for modules.",
-        "alizharb/laravel-modular-filament": "Enables Filament v5 admin panel integration with automatic discovery in modules.",
-        "alizharb/filament-themer-luncher": "Provides a comprehensive Filament v5 interface for managing and switching themes.",
-        "alizharb/filament-modular-luncher": "A powerful Filament v5 manager for listing, toggling, and backing up system modules.",
-        "alizharb/laravel-hooks": "Adds a universal extensibility and plugin system for Laravel applications."
+        "ridwans2/raja-themer": "For advanced theme management support",
+        "ridwans2/raja-modular-livewire": "Provides automatic Livewire component discovery and registration within modules.",
+        "ridwans2/raja-modular-js": "Enables JS discovery within modular structures and provides zero-config autoloading for modules.",
+        "ridwans2/raja-modular-filament": "Enables Filament v5 admin panel integration with automatic discovery in modules.",
+        "ridwans2/filament-themer-luncher": "Provides a comprehensive Filament v5 interface for managing and switching themes.",
+        "ridwans2/filament-modular-luncher": "A powerful Filament v5 manager for listing, toggling, and backing up system modules.",
+        "ridwans2/raja-hooks": "Adds a universal extensibility and plugin system for Laravel applications."
     },
     "config": {
         "allow-plugins": {

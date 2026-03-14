@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Compilers\BladeCompiler;
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 
 afterEach(function () {
     exec('rm -rf ' . escapeshellarg(base_path('modules/ViewModule')));
@@ -23,7 +23,7 @@ it('registers class based blade components dynamically', function () {
     $registry->getActivator()->setStatus('ViewModule', true);
 
     // Manually trigger resources boot
-    $provider = new \AlizHarb\Modular\ModularServiceProvider($this->app);
+    $provider = new \Ridwans2\RajaModularCore\ModularServiceProvider($this->app);
 
     $reflection = new \ReflectionMethod($provider, 'bootModularResources');
     $reflection->setAccessible(true);

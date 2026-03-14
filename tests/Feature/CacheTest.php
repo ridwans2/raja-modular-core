@@ -1,8 +1,8 @@
 <?php
 
-namespace AlizHarb\Modular\Tests\Feature;
+namespace Ridwans2\RajaModularCore\Tests\Feature;
 
-use AlizHarb\Modular\Tests\TestCase;
+use Ridwans2\RajaModularCore\Tests\TestCase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 

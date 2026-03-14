@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Tests\Feature;
+namespace Ridwans2\RajaModularCore\Tests\Feature;
 
-use AlizHarb\Modular\ModuleRegistry;
-use AlizHarb\Modular\Tests\TestCase;
+use Ridwans2\RajaModularCore\ModuleRegistry;
+use Ridwans2\RajaModularCore\Tests\TestCase;
 use Illuminate\Support\Facades\File;
 
 class CustomStubsTest extends TestCase

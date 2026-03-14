@@ -11,18 +11,18 @@
     ],
     "autoload": {
         "psr-4": {
-            "Modules\\{{name}}\\": "app/"
+            "Aplikasi\\{{name}}\\": "app/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Modules\\{{name}}\\Tests\\": "tests/"
+            "Aplikasi\\{{name}}\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Modules\\{{name}}\\Providers\\{{name}}ServiceProvider"
+                "Aplikasi\\{{name}}\\Providers\\{{name}}ServiceProvider"
             ]
         }
     }

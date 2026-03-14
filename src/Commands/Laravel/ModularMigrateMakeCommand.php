@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Commands\Laravel;
+namespace Ridwans2\RajaModularCore\Commands\Laravel;
 
-use AlizHarb\Modular\Concerns\ModularCommand;
+use Ridwans2\RajaModularCore\Concerns\ModularCommand;
 use Illuminate\Database\Console\Migrations\MigrateMakeCommand;
 
 /**

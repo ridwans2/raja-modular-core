@@ -1,6 +1,6 @@
 <?php
 
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {
@@ -62,7 +62,7 @@ it('allows enabling a module if dependencies are enabled', function () {
 
     // Refresh registry to pickup enabled status of A
     app()->forgetInstance(ModuleRegistry::class);
-    app()->forgetInstance(\AlizHarb\Modular\Activators\FileActivator::class);
+    app()->forgetInstance(\Ridwans2\RajaModularCore\Activators\FileActivator::class);
 
     // Now enable Module B
     // We expect success because A is enabled

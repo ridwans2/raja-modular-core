@@ -1,5 +1,5 @@
 <?php
 
-use AlizHarb\Modular\Tests\TestCase;
+use Ridwans2\RajaModularCore\Tests\TestCase;
 
 uses(TestCase::class)->in('Feature', 'Unit');

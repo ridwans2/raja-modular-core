@@ -1,9 +1,9 @@
 <?php
 
-namespace AlizHarb\Modular\Tests\Feature;
+namespace Ridwans2\RajaModularCore\Tests\Feature;
 
-use AlizHarb\Modular\ModuleRegistry;
-use AlizHarb\Modular\Tests\TestCase;
+use Ridwans2\RajaModularCore\ModuleRegistry;
+use Ridwans2\RajaModularCore\Tests\TestCase;
 
 class ConfigTest extends TestCase
 {
@@ -23,7 +23,7 @@ class ConfigTest extends TestCase
         // and rely on the implementation correctness we just wrote.
         // In a real scenario, we would set up a fixture module.
 
-        $provider = $this->app->getProvider(\AlizHarb\Modular\ModularServiceProvider::class);
+        $provider = $this->app->getProvider(\Ridwans2\RajaModularCore\ModularServiceProvider::class);
         $this->assertTrue(method_exists($provider, 'registerModuleConfigs'));
     }
 }

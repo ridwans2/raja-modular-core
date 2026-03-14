@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use AlizHarb\Modular\Facades\Modular;
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\Facades\Modular;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 
 if (! function_exists('module')) {
     /**
@@ -45,7 +45,7 @@ if (! function_exists('modules_path')) {
     {
         $basePath = (string) config('modular.paths.modules', base_path('modules'));
 
-        return $path ? rtrim($basePath, '/') . '/' . ltrim($path, '/') : rtrim($basePath, '/');
+        return $path ? mb_rtrim($basePath, '/').'/'.mb_ltrim($path, '/') : mb_rtrim($basePath, '/');
     }
 }
 
@@ -55,7 +55,7 @@ if (! function_exists('module_config_path')) {
      */
     function module_config_path(string $module, string $path = ''): string
     {
-        return module_path($module, 'config/' . trim($path, '/'));
+        return module_path($module, 'config/'.mb_trim($path, '/'));
     }
 }
 
@@ -65,10 +65,10 @@ if (! function_exists('module_asset')) {
      */
     function module_asset(string $module, string $path): string
     {
-        $module = strtolower($module);
+        $module = mb_strtolower($module);
         $assetPath = config('modular.paths.assets', 'modules');
 
-        return asset("{$assetPath}/{$module}/" . ltrim($path, '/'));
+        return asset("{$assetPath}/{$module}/".mb_ltrim($path, '/'));
     }
 }
 
@@ -76,15 +76,15 @@ if (! function_exists('modular_vite')) {
     /**
      * Get the Vite tags for modular assets.
      *
-     * @param string|array<int, string> $entryPoints
-     * @return \Illuminate\Support\HtmlString
+     * @param  string|array<int, string>  $entryPoints
+     * @return Illuminate\Support\HtmlString
      */
     function modular_vite(string|array $entryPoints, ?string $buildDirectory = null): mixed
     {
         $buildDirectory = $buildDirectory ?: config('modular.paths.assets', 'modules');
 
-        /** @var \Illuminate\Foundation\Vite $vite */
-        $vite = app(\Illuminate\Foundation\Vite::class);
+        /** @var Illuminate\Foundation\Vite $vite */
+        $vite = app(Illuminate\Foundation\Vite::class);
 
         return $vite($entryPoints, $buildDirectory);
     }

@@ -1,5 +1,5 @@
 {
-    "$schema": "../../vendor/alizharb/laravel-modular/resources/schemas/module.schema.json",
+    "$schema": "../../vendor/ridwans2/raja-modular-core/resources/schemas/module.schema.json",
     "name": "{{name}}",
     "description": "",
     "version": "1.0.0",
@@ -11,7 +11,7 @@
             "email": "{{authorEmail}}"
         }
     ],
-    "namespace": "Modules\\{{name}}\\",
-    "provider": "Modules\\{{name}}\\Providers\\{{name}}ServiceProvider",
+    "namespace": "Aplikasi\\{{name}}\\",
+    "provider": "Aplikasi\\{{name}}\\Providers\\{{name}}ServiceProvider",
     "requires": []
 }

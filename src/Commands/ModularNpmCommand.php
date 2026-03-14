@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Commands;
+namespace Ridwans2\RajaModularCore\Commands;
 
-use AlizHarb\Modular\Concerns\ModularCommand;
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\Concerns\ModularCommand;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Commands;
+namespace Ridwans2\RajaModularCore\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -47,7 +47,7 @@ class ModularInstallCommand extends Command
         $this->comment('You can now create your first module using: php artisan make:module {name}');
 
         if ($this->confirm('Would you like to show some love by starring the repo on GitHub? ⭐', true)) {
-            $url = 'https://github.com/alizharb/laravel-modular';
+            $url = 'https://github.com/ridwans2/raja-modular-core';
             if (PHP_OS_FAMILY === 'Darwin') {
                 exec("open {$url}");
             } elseif (PHP_OS_FAMILY === 'Windows') {
@@ -69,13 +69,13 @@ class ModularInstallCommand extends Command
         $this->info('Publishing resources...');
 
         $this->call('vendor:publish', [
-            '--provider' => "AlizHarb\Modular\ModularServiceProvider",
+            '--provider' => "Ridwans2\RajaModularCore\ModularServiceProvider",
             '--tag' => 'modular-config',
         ]);
 
         if ($this->confirm('Would you like to publish the modular stubs for customization?', true)) {
             $this->call('vendor:publish', [
-                '--provider' => "AlizHarb\Modular\ModularServiceProvider",
+                '--provider' => "Ridwans2\RajaModularCore\ModularServiceProvider",
                 '--tag' => 'modular-stubs',
             ]);
         }

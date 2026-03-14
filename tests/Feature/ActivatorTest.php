@@ -1,6 +1,6 @@
 <?php
 
-use AlizHarb\Modular\Activators\FileActivator;
+use Ridwans2\RajaModularCore\Activators\FileActivator;
 use Illuminate\Support\Facades\File;
 
 beforeEach(function () {

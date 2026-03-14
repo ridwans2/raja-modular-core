@@ -1,9 +1,9 @@
 <?php
 
-namespace AlizHarb\Modular\Tests\Feature;
+namespace Ridwans2\RajaModularCore\Tests\Feature;
 
-use AlizHarb\Modular\ModuleRegistry;
-use AlizHarb\Modular\Tests\TestCase;
+use Ridwans2\RajaModularCore\ModuleRegistry;
+use Ridwans2\RajaModularCore\Tests\TestCase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 
@@ -65,7 +65,7 @@ class MiddlewareTest extends TestCase
         ]));
 
         // 3. Register
-        $sp = new \AlizHarb\Modular\ModularServiceProvider($this->app);
+        $sp = new \Ridwans2\RajaModularCore\ModularServiceProvider($this->app);
         // Reflection to call protected method if needed, or just call packageRegistered?
         // Typically packageRegistered registers configs and providers.
         // We added registerModuleMiddleware to packageRegistered.

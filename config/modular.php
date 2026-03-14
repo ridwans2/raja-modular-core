@@ -19,8 +19,8 @@ return [
     */
 
     'paths' => [
-        'modules' => base_path('modules'),
-        'assets' => 'modules',
+        'modules' => base_path('aplikasi'),
+        'assets' => 'aplikasi',
     ],
 
     /*
@@ -42,8 +42,8 @@ return [
     */
 
     'naming' => [
-        'root_namespace' => 'Modules',
-        'resource_prefix' => 'module',
+        'root_namespace' => 'Aplikasi',
+        'resource_prefix' => 'aplikasi',
     ],
 
     /*
@@ -134,10 +134,10 @@ return [
     */
 
     'composer' => [
-        'vendor' => 'alizharb',
+        'vendor' => 'ridwans2',
         'author' => [
-            'name' => 'Ali Harb',
-            'email' => 'harbzali@gmail.com',
+            'name' => 'Ridwan S',
+            'email' => 'ridwans2@example.com',
         ],
         'type' => 'library',
         'license' => 'MIT',
@@ -157,7 +157,7 @@ return [
 
     'activators' => [
         'file' => [
-            'class' => \AlizHarb\Modular\Activators\FileActivator::class,
+            'class' => Ridwans2\RajaModularCore\Activators\FileActivator::class,
             'statuses-file' => base_path('bootstrap/cache/modules_statuses.json'),
         ],
     ],

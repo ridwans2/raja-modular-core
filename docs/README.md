@@ -20,7 +20,7 @@ Get started in 30 seconds.
 ### 1. Require via Composer
 
 ```bash
-composer require alizharb/laravel-modular
+composer require ridwans2/raja-modular-core
 ```
 
 ### 2. Install & Configure

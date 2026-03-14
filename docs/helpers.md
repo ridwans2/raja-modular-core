@@ -8,7 +8,7 @@ Access the Module Registry or get configuration for a specific module.
 
 ```php
 $registry = module();
-// Returns \AlizHarb\Modular\ModuleRegistry
+// Returns \Ridwans2\RajaModularCore\ModuleRegistry
 ```
 
 ```php
@@ -25,7 +25,7 @@ if ($config) {
 Alternatively, you can use the facade for object-oriented access.
 
 ```php
-use AlizHarb\Modular\Facades\Modular;
+use Ridwans2\RajaModularCore\Facades\Modular;
 
 // Get all modules
 $modules = Modular::getModules();

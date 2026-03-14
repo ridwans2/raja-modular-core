@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular;
+namespace Ridwans2\RajaModularCore;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -25,21 +25,6 @@ final class ModularServiceProvider extends PackageServiceProvider
     protected static array $plugins = [];
 
     /**
-     * Configure the package service provider.
-     */
-    public function configurePackage(Package $package): void
-    {
-        $package
-            ->name('laravel-modular')
-            ->hasConfigFile('modular')
-            ->hasViews();
-
-        $this->publishes([
-            __DIR__ . '/../resources/stubs' => base_path('stubs/modular'),
-        ], 'modular-stubs');
-    }
-
-    /**
      * Register a modular plugin.
      */
     public static function registerPlugin(Contracts\ModularPlugin $plugin): void
@@ -48,11 +33,26 @@ final class ModularServiceProvider extends PackageServiceProvider
     }
 
     /**
+     * Configure the package service provider.
+     */
+    public function configurePackage(Package $package): void
+    {
+        $package
+            ->name('raja-modular-core')
+            ->hasConfigFile('modular')
+            ->hasViews();
+
+        $this->publishes([
+            __DIR__.'/../resources/stubs' => base_path('stubs/modular'),
+        ], 'modular-stubs');
+    }
+
+    /**
      * Register any package services.
      */
     public function packageRegistered(): void
     {
-        $this->app->singleton(ModuleRegistry::class, fn() => new ModuleRegistry());
+        $this->app->singleton(ModuleRegistry::class, fn () => new ModuleRegistry());
 
         $this->app->alias(ModuleRegistry::class, 'modular.registry');
         $this->app->alias('Modular', Facades\Modular::class);
@@ -100,7 +100,7 @@ final class ModularServiceProvider extends PackageServiceProvider
             }
 
             // Fallback to Laravel's default guessing correctly mapping App\Models to Database\Factories
-            return 'Database\\Factories\\' . class_basename($modelName) . 'Factory';
+            return 'Database\\Factories\\'.class_basename($modelName).'Factory';
         });
 
         $this->app->booted(function () {
@@ -165,7 +165,7 @@ final class ModularServiceProvider extends PackageServiceProvider
             foreach (File::files($configPath) as $file) {
                 $filename = $file->getFilenameWithoutExtension();
                 $name = $module['name'];
-                $lowerName = strtolower($name);
+                $lowerName = mb_strtolower($name);
 
                 // Case-sensitive "Blog::settings"
                 $this->mergeConfigFrom($file->getPathname(), "{$name}::{$filename}");

@@ -1,13 +1,13 @@
 # Changelog
 
-All notable changes to `laravel-modular` will be documented in this file.
+All notable changes to `raja-modular-core` will be documented in this file.
 
 ## v1.1.5 - 2026-02-28
 
 ### Added
 
 - **Class-Based Blade Components**: Properly mapped `Blade::componentNamespace` internally, allowing native `<x-module::component>` usage for PHP class-based components located in `app/View/Components/`.
-- **Custom Eloquent Factory Resolution**: Intercepted Laravel's `Factory::guessFactoryNamesUsing` to successfully map `Modules\Shop\Models\Item` to `Modules\Shop\Database\Factories\ItemFactory` for intuitive testing.
+- **Custom Eloquent Factory Resolution**: Intercepted Laravel's `Factory::guessFactoryNamesUsing` to successfully map `Aplikasi\Shop\Models\Item` to `Aplikasi\Shop\Database\Factories\ItemFactory` for intuitive testing.
 - **Route Prefixes**: Automatically mounts all modular web/API routes using `route_prefix` defined within `module.json` (defaults to none for backward compatibility).
 - **Topological Boot Sorting**: `ModuleRegistry` now implements Kahn's graph sorting algorithm to guarantee that modules are booted in strict order of their dependencies.
 - **Custom Per-Module Stubs**: `make:*` commands will now dynamically check a module's `stubs/` directory first, allowing you to override scaffolding templates on a per-module basis.
@@ -17,7 +17,7 @@ All notable changes to `laravel-modular` will be documented in this file.
 - **Dependency Tree Visualization**: `modular:list` now accepts a `--tree` flag that prints a visual ASCII tree of module dependencies and their enabled/disabled status.
 - **Module Health Score**: `modular:doctor` now features a comprehensive 100-point Health Score per module, intelligently evaluating criteria like testing coverage, readme presence, dependencies, and valid manifests.
 - **Module Extractor**: Added a powerful new `modular:export {module}` command to detach and export a module to a target directory as a fully-functional, standalone Composer package.
-- **Native Testing Support**: Running `php artisan test` or `./vendor/bin/pest` from the root of a Laravel application natively discovers and runs all tests inside `modules/*/tests/`.
+- **Native Testing Support**: Running `php artisan test` or `./vendor/bin/pest` from the root of a Laravel application natively discovers and runs all tests inside `aplikasi/*/tests/`.
 - **Dynamic PHPUnit Injection**: `modular:install` seamlessly injects the module test paths into the host application's `phpunit.xml` or `phpunit.xml.dist`.
 - **Automatic Test Autoloading**: Newly generated modules via `make:module` now include proper `autoload-dev` mappings for PSR-4 compliance. Legacy modules are automatically patched during `modular:install`.
 - **Laravel 13 Support**: Official compatibility with Laravel 13.
@@ -69,7 +69,7 @@ All notable changes to `laravel-modular` will be documented in this file.
 ### Added
 
 - **New `modular:list` Command**: Visualize all registered modules, discovered policies, events, and their discovery sources (Convention vs Explicit).
-- **New `modular:sync` Command**: Sync module-specific dependencies from `modules/*/composer.json` into the root `composer.json` for optimized production performance.
+- **New `modular:sync` Command**: Sync module-specific dependencies from `aplikasi/*/composer.json` into the root `composer.json` for optimized production performance.
 - **New `modular:npm` Command**: Manage module-level assets easily using NPM Workspaces from the Artisan console.
 - **Monorepo-lite Assets**: Each module now gets its own `package.json` and `vite.config.js` for isolated dependency and asset management.
 - **Discovery Tracking**: `ModuleRegistry` now tracks the source of discovered resources for better transparency.
@@ -86,7 +86,7 @@ All notable changes to `laravel-modular` will be documented in this file.
 
 ### Added
 
-- **Independent Vite Loader**: Introduced `vite.modular.js` for clean, standalone asset discovery in `modules/`.
+- **Independent Vite Loader**: Introduced `vite.modular.js` for clean, standalone asset discovery in `aplikasi/`.
 - **Improved Installation**: `modular:install` now asks for user consent before automatically updating `composer.json` and `vite.config.js`.
 - **Manual Configuration Guide**: Added detailed instructions and code snippets when the user chooses to manually configure Vite.
 
@@ -122,7 +122,7 @@ All notable changes to `laravel-modular` will be documented in this file.
 - **JSON Schema**: Added `module.schema.json` for IDE autocompletion and validation of `module.json`.
 - **Versioning**: Modules now support a `version` field in `module.json`.
 - **Vite Integration**: Added `modular_vite()` helper for effortless asset loading across modules.
-- **Themer Integration**: Optional, first-class support for `alizharb/laravel-themer`.
+- **Themer Integration**: Optional, first-class support for `ridwans2/laravel-themer`.
 
 ### Changed
 

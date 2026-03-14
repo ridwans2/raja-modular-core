@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Activators;
+namespace Ridwans2\RajaModularCore\Activators;
 
-use AlizHarb\Modular\Contracts\Activator;
+use Ridwans2\RajaModularCore\Contracts\Activator;
 use Illuminate\Support\Facades\File;
 
 class FileActivator implements Activator

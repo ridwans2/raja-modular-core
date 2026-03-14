@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Facades;
+namespace Ridwans2\RajaModularCore\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string resolvePath(string $module, string $path = '')
  * @method static void registerAutoloading()
  *
- * @see \AlizHarb\Modular\ModuleRegistry
+ * @see \Ridwans2\RajaModularCore\ModuleRegistry
  */
 class Modular extends Facade
 {

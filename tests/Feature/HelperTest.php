@@ -1,6 +1,6 @@
 <?php
 
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 use Illuminate\Support\Facades\File;
 
 it('can access the module registry via helper', function () {

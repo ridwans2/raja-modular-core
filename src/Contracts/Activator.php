@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Contracts;
+namespace Ridwans2\RajaModularCore\Contracts;
 
 interface Activator
 {

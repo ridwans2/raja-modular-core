@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Commands;
+namespace Ridwans2\RajaModularCore\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -113,7 +113,7 @@ final class ModularMakeModuleCommand extends Command
         $content = $this->getStubContents('composer.json.stub', [
             'name' => $name,
             'lowerName' => strtolower($name),
-            'vendor' => (string) config('modular.composer.vendor', 'alizharb'),
+            'vendor' => (string) config('modular.composer.vendor', 'ridwans2'),
             'authorName' => (string) config('modular.composer.author.name', 'Ali Harb'),
             'authorEmail' => (string) config('modular.composer.author.email', 'harbzali@gmail.com'),
             'type' => (string) config('composer.type', 'library'),

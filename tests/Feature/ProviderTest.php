@@ -1,9 +1,9 @@
 <?php
 
-namespace AlizHarb\Modular\Tests\Feature;
+namespace Ridwans2\RajaModularCore\Tests\Feature;
 
-use AlizHarb\Modular\ModuleRegistry;
-use AlizHarb\Modular\Tests\TestCase;
+use Ridwans2\RajaModularCore\ModuleRegistry;
+use Ridwans2\RajaModularCore\Tests\TestCase;
 
 class ProviderTest extends TestCase
 {
@@ -15,7 +15,7 @@ class ProviderTest extends TestCase
 
     public function test_it_registers_module_providers()
     {
-        $provider = $this->app->getProvider(\AlizHarb\Modular\ModularServiceProvider::class);
+        $provider = $this->app->getProvider(\Ridwans2\RajaModularCore\ModularServiceProvider::class);
         $this->assertTrue(method_exists($provider, 'registerModuleProviders'));
     }
 }

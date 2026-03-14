@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace AlizHarb\Modular\Contracts;
+namespace Ridwans2\RajaModularCore\Contracts;
 
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 use Illuminate\Contracts\Foundation\Application;
 
 /**

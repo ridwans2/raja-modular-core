@@ -1,7 +1,7 @@
 <?php
 
-use AlizHarb\Modular\Facades\Modular;
-use AlizHarb\Modular\ModuleRegistry;
+use Ridwans2\RajaModularCore\Facades\Modular;
+use Ridwans2\RajaModularCore\ModuleRegistry;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -44,7 +44,7 @@ afterEach(function () {
 });
 
 it('can register the facade', function () {
-    expect(app('modular.registry'))->toBeInstanceOf(\AlizHarb\Modular\ModuleRegistry::class);
+    expect(app('modular.registry'))->toBeInstanceOf(\Ridwans2\RajaModularCore\ModuleRegistry::class);
 });
 
 it('can resolve a module path', function () {
@@ -103,7 +103,7 @@ PHP;
     $registry = new ModuleRegistry();
     $this->app->instance(ModuleRegistry::class, $registry);
 
-    $sp = new \AlizHarb\Modular\ModularServiceProvider($this->app);
+    $sp = new \Ridwans2\RajaModularCore\ModularServiceProvider($this->app);
     $sp->packageRegistered();
     $sp->packageBooted();
 
@@ -127,7 +127,7 @@ PHP;
     Config::set('modular.config.alias', false);
 
     // Reload provider
-    $sp = new \AlizHarb\Modular\ModularServiceProvider($this->app);
+    $sp = new \Ridwans2\RajaModularCore\ModularServiceProvider($this->app);
     $sp->packageRegistered();
 
     // Should NOT have lowercase alias now
